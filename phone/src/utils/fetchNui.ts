@@ -8,7 +8,7 @@
 import LogDebugEvent from '../os/debug/LogDebugEvents';
 import { isEnvBrowser } from './misc';
 
-export async function fetchNui<T = any>(eventName: string, data?: any, mockResp?: T): Promise<T> {
+async function fetchNui<T = any, D = any>(eventName: string, data?: D, mockResp?: T): Promise<T> {
   const options = {
     method: 'post',
     headers: {
@@ -17,9 +17,16 @@ export async function fetchNui<T = any>(eventName: string, data?: any, mockResp?
     body: JSON.stringify(data),
   };
 
-  LogDebugEvent({ data, action: `fetchNui (${eventName})` });
-
-  if (isEnvBrowser() && mockResp) return mockResp;
+  if (isEnvBrowser() && mockResp) {
+    LogDebugEvent({
+      data: {
+        request: data,
+        response: mockResp,
+      },
+      action: `fetchNui (${eventName})`,
+    });
+    return mockResp;
+  }
 
   const resourceName = (window as any).GetParentResourceName
     ? (window as any).GetParentResourceName()
@@ -27,5 +34,17 @@ export async function fetchNui<T = any>(eventName: string, data?: any, mockResp?
 
   const resp = await fetch(`https://${resourceName}/${eventName}`, options);
 
-  return await resp.json();
+  const responseObj = await resp.json();
+
+  LogDebugEvent({
+    data: {
+      request: data,
+      response: responseObj,
+    },
+    action: `fetchNui (${eventName})`,
+  });
+
+  return responseObj;
 }
+
+export default fetchNui;

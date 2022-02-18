@@ -27,6 +27,7 @@ interface General {
   useDashNumber: boolean;
   useResourceIntegration: boolean;
   toggleKey: string;
+  toggleCommand: string;
 }
 
 interface NotificationConfig {
@@ -45,6 +46,13 @@ interface DatabaseConfig {
   useIdentifierPrefix: boolean;
   profileQueries: boolean;
   phoneNumberColumn: string;
+}
+
+interface ImageSafety {
+  filterUnsafeImageUrls: boolean;
+  embedUnsafeImages: boolean;
+  embedUrl: string;
+  safeImageUrls: string[];
 }
 
 interface ImageConfig {
@@ -75,4 +83,5 @@ export interface ResourceConfig {
   general: General;
   debug: Debug;
   images: ImageConfig;
+  imageSafety: ImageSafety;
 }

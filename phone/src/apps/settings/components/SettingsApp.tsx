@@ -4,9 +4,7 @@ import { AppTitle } from '@ui/components/AppTitle';
 import { AppContent } from '@ui/components/AppContent';
 import { useContextMenu, MapSettingItem, SettingOption } from '@ui/hooks/useContextMenu';
 import { usePhoneConfig } from '../../../config/hooks/usePhoneConfig';
-import { List } from '@ui/components/List';
 import { useMyPhoneNumber } from '@os/simcard/hooks/useMyPhoneNumber';
-import { IconSetObject, useApp } from '@os/apps/hooks/useApps';
 import {
   SettingItem,
   SettingItemIconAction,
@@ -30,18 +28,15 @@ import {
   Apps,
 } from '@mui/icons-material';
 import makeStyles from '@mui/styles/makeStyles';
-import { ListSubheader } from '@mui/material';
-import { useCustomWallpaperModal, useResetSettings, useSettings } from '../hooks/useSettings';
+import { useResetSettings, useSettings } from '../hooks/useSettings';
 import { setClipboard } from '@os/phone/hooks/useClipboard';
 import { useSnackbar } from '@os/snackbar/hooks/useSnackbar';
 import { IContextMenuOption } from '@ui/components/ContextMenu';
 import WallpaperModal from './WallpaperModal';
-
-const SubHeaderComp = (props: { text: string }) => (
-  <ListSubheader color="primary" component="div" disableSticky>
-    {props.text}
-  </ListSubheader>
-);
+import { SettingsCategory } from './SettingsCategory';
+import { IconSetObject } from '@typings/settings';
+import { useApp } from '@os/apps/hooks/useApps';
+import { useCustomWallpaperModal } from '../state/customWallpaper.state';
 
 const useStyles = makeStyles({
   backgroundModal: {
@@ -56,7 +51,7 @@ const useStyles = makeStyles({
   },
 });
 
-export const SettingsApp = () => {
+export const SettingsApp: React.FC = () => {
   const settingsApp = useApp('SETTINGS');
   const [config] = usePhoneConfig();
   const myNumber = useMyPhoneNumber();
@@ -79,9 +74,9 @@ export const SettingsApp = () => {
   );
 
   const wallpapers = config.wallpapers.map(
-    MapSettingItem(settings.wallpaper, (val: SettingOption) => {
-      handleSettingChange('wallpaper', val);
-    }),
+    MapSettingItem(settings.wallpaper, (val: SettingOption) =>
+      handleSettingChange('wallpaper', val),
+    ),
   );
   const frames = config.frames.map(
     MapSettingItem(settings.frame, (val: SettingOption) => handleSettingChange('frame', val)),
@@ -173,12 +168,11 @@ export const SettingsApp = () => {
         backdrop={isMenuOpen}
         onClickBackdrop={closeMenu}
         display="flex"
-        id="test"
         style={{
           height: 'auto',
         }}
       >
-        <List disablePadding subheader={<SubHeaderComp text={t('SETTINGS.CATEGORY.PHONE')} />}>
+        <SettingsCategory title={t('SETTINGS.CATEGORY.PHONE')}>
           <SettingItemIconAction
             label={t('SETTINGS.PHONE_NUMBER')}
             labelSecondary={myNumber}
@@ -222,8 +216,14 @@ export const SettingsApp = () => {
             value={settings.streamerMode}
             onClick={(curr) => handleSettingChange('streamerMode', !curr)}
           />
-        </List>
-        <List disablePadding subheader={<SubHeaderComp text={t('SETTINGS.CATEGORY.APPEARANCE')} />}>
+          <SettingItemSlider
+            label={t('SETTINGS.OPTIONS.CALL_VOLUME')}
+            icon={<VolumeUp />}
+            value={settings.callVolume}
+            onCommit={(_, val) => handleSettingChange('callVolume', val)}
+          />
+        </SettingsCategory>
+        <SettingsCategory title={t('SETTINGS.CATEGORY.APPEARANCE')}>
           <SettingItem
             label={t('SETTINGS.OPTIONS.LANGUAGE')}
             value={settings.language.label}
@@ -247,7 +247,7 @@ export const SettingsApp = () => {
           />
           <SettingItem
             label={t('SETTINGS.OPTIONS.WALLPAPER')}
-            value={t(settings.wallpaper.label)}
+            value={settings.wallpaper.label}
             options={[...wallpapers, customWallpaper]}
             onClick={openMenu}
             icon={<Wallpaper />}
@@ -266,8 +266,8 @@ export const SettingsApp = () => {
             onClick={openMenu}
             icon={<ZoomIn />}
           />
-        </List>
-        <List disablePadding subheader={<SubHeaderComp text={t('APPS_TWITTER')} />}>
+        </SettingsCategory>
+        <SettingsCategory title={t('APPS_TWITTER')}>
           <SettingItem
             label={t('SETTINGS.OPTIONS.NOTIFICATION_FILTER')}
             value={settings.TWITTER_notiFilter.label}
@@ -288,16 +288,25 @@ export const SettingsApp = () => {
             onCommit={(e, val) => handleSettingChange('TWITTER_notiSoundVol', val)}
             icon={<VolumeUp />}
           />
-        </List>
-        <List disablePadding subheader={<SubHeaderComp text={t('SETTINGS.CATEGORY.ACTIONS')} />}>
+        </SettingsCategory>
+        <SettingsCategory title={t('APPS_MARKETPLACE')}>
+          <SettingSwitch
+            label={t('SETTINGS.MARKETPLACE.NOTIFICATION')}
+            secondary={t('SETTINGS.MARKETPLACE.NOTIFY_NEW_LISTING')}
+            value={settings.MARKETPLACE_notifyNewListing}
+            icon={<FilterList />}
+            onClick={(curr) => handleSettingChange('MARKETPLACE_notifyNewListing', !curr)}
+          />
+        </SettingsCategory>
+        <SettingsCategory title={t('SETTINGS.CATEGORY.ACTIONS')}>
           <SettingItem
             label={t('SETTINGS.OPTIONS.RESET_SETTINGS')}
-            value={`${t('SETTINGS.OPTIONS.RESET_SETTINGS_DESC')}`}
+            value={t('SETTINGS.OPTIONS.RESET_SETTINGS_DESC')}
             icon={<DeleteForever />}
             onClick={openMenu}
             options={resetSettingsOpts}
           />
-        </List>
+        </SettingsCategory>
       </AppContent>
       <ContextMenu />
     </AppWrapper>

@@ -50,6 +50,10 @@
           "DIALOG_PLACEHOLDER": "Link immagine",
           "DIALOG_ERROR": "Immagine o link invalido"
         },
+<<<<<<< HEAD
+=======
+        "CALL_VOLUME": "Call Volume",
+>>>>>>> 54ab980a084d8142ab7a99fca23659ebb5cbc7e5
         "RINGTONE": "Suoneria",
         "RINGTONE_VOLUME": "Volume suoneria",
         "NOTIFICATION": "Notifiche",

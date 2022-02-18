@@ -1,4 +1,9 @@
 export const PHONE_NUMBER_REGEX = /^([0-9]{3}-[0-9]{4})|([0-9]{7})$/;
+export interface ScriptMessage<T = any> {
+  method: string;
+  app: string;
+  data: T;
+}
 
 export enum PhoneEvents {
   OPEN_APP = 'npwd:openApp',
@@ -15,6 +20,7 @@ export enum PhoneEvents {
   FETCH_CREDENTIALS = 'npwd:getCredentials',
   TOGGLE_KEYS = 'npwd:toggleAllControls',
   SET_PLAYER_LOADED = 'npwd:setPlayerLoaded',
+  IS_PHONE_DISABLED = 'npwd:isPhoneDisabled',
 }
 
 // Used to standardize the server response

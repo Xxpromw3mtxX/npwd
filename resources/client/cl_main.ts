@@ -1,6 +1,6 @@
 import { sendMessage } from '../utils/messages';
 import { PhoneEvents } from '../../typings/phone';
-import { config } from './client';
+import { config } from './cl_config';
 import { animationService } from './animations/animation.controller';
 import { RegisterNuiCB } from './cl_utils';
 
@@ -26,7 +26,16 @@ onNet(PhoneEvents.SET_PLAYER_LOADED, (state: boolean) => {
   }
 });
 
-RegisterKeyMapping('phone', 'Open Phone', 'keyboard', config.general.toggleKey);
+RegisterKeyMapping(
+  config.general.toggleCommand,
+  'Toggle Phone',
+  'keyboard',
+  config.general.toggleKey,
+);
+
+setTimeout(() => {
+  emit('chat:addSuggestion', `${config.general.toggleCommand}`, 'Toggle displaying your cellphone');
+}, 1000);
 
 const getCurrentGameTime = () => {
   let hour: string | number = GetClockHours();
@@ -74,7 +83,7 @@ export const hidePhone = async (): Promise<void> => {
  *
  * * * * * * * * * * * * */
 RegisterCommand(
-  'phone',
+  config.general.toggleCommand,
   async () => {
     //-- Toggles Phone
     // Check to see if the phone is marked as disabled
@@ -98,7 +107,8 @@ RegisterCommand(
  *
  * * * * * * * * * * * * */
 
-const checkExportCanOpen = async (): Promise<boolean> => {
+export const checkHasPhone = async (): Promise<boolean> => {
+  if (!config.PhoneAsItem.enabled) return true;
   const exportResp = await Promise.resolve(
     exps[config.PhoneAsItem.exportResource][config.PhoneAsItem.exportFunction](),
   );
@@ -110,10 +120,8 @@ const checkExportCanOpen = async (): Promise<boolean> => {
 };
 
 async function togglePhone(): Promise<void> {
-  if (config.PhoneAsItem.enabled) {
-    const canAccess = await checkExportCanOpen();
-    if (!canAccess) return;
-  }
+  const canAccess = await checkHasPhone();
+  if (!canAccess) return;
   if (global.isPhoneOpen) return await hidePhone();
   await showPhone();
 }

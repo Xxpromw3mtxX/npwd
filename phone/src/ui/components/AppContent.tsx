@@ -2,6 +2,7 @@ import React from 'react';
 import { Backdrop, Paper, BoxProps } from '@mui/material';
 import makeStyles from '@mui/styles/makeStyles';
 import { AppContentTypes } from '../interface/InterfaceUI';
+import { LoadingSpinner } from '@ui/components/LoadingSpinner';
 
 const useStyles = makeStyles(() => ({
   wrapper: {
@@ -23,6 +24,7 @@ export const AppContent: React.FC<AppContentTypes & BoxProps> = ({
   children,
   paperStyle,
   backdrop,
+  disableSuspenseHandler,
   onClickBackdrop,
   ...props
 }) => {
@@ -42,7 +44,11 @@ export const AppContent: React.FC<AppContentTypes & BoxProps> = ({
         className={`${classes.paper} ${props.className}`}
         style={paperStyle}
       >
-        {children}
+        {!disableSuspenseHandler ? (
+          <React.Suspense fallback={<LoadingSpinner />}>{children}</React.Suspense>
+        ) : (
+          { children }
+        )}
       </Paper>
     </Paper>
   );
